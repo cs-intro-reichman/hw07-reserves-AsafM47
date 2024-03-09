@@ -1,3 +1,4 @@
+import java.util.Dictionary;
 
 public class SpellChecker {
 
@@ -11,11 +12,34 @@ public class SpellChecker {
 	}
 
 	public static String tail(String str) {
-		// Your code goes here
+		return str.substring(1);
 	}
 
 	public static int levenshtein(String word1, String word2) {
-		// Your code goes here
+
+
+		if(word2.length() == 0){
+			return word1.length();
+		}
+		if(word1.length() ==0){
+			return word2.length();
+		}
+		String head1 = word1.substring(0, 1);
+		String head2 = word2.substring(0, 1);
+		if(head1.equals(head2)){
+			word1 = tail(word1);
+			word2 = tail(word2);
+			return levenshtein(word1, word2);
+		}
+		else{
+			int d1 = 1 + levenshtein(word1, tail(word2));
+			int d2 = 1 + levenshtein(tail(word1), word2);
+			int d3 = 1+ levenshtein(tail(word1), tail(word2));
+			return Math.min(Math.min(d1, d2),d3);			
+			
+		}
+
+
 	}
 
 	public static String[] readDictionary(String fileName) {
@@ -23,13 +47,30 @@ public class SpellChecker {
 
 		In in = new In(fileName);
 
-		// Your code here
-
+		for(int i=0; i<dictionary.length; i++){
+			dictionary[i]= in.readLine();
+		}
 		return dictionary;
 	}
 
 	public static String spellChecker(String word, int threshold, String[] dictionary) {
-		// Your code goes here
+		String tWord = word;
+		int tDis = word.length();
+		int minDis = word.length(); 
+		for(int i = 0; i<dictionary.length;i++){
+			tDis = levenshtein(word, dictionary[i]);
+			if(tDis < minDis){
+				tWord = dictionary[i];
+				minDis = tDis;
+			}
+		}
+		if(minDis <= threshold){
+			return tWord;
+		}
+		else{
+			return word;
+		}
+		
 	}
 
 }
